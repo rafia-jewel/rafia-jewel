@@ -4,7 +4,7 @@
 
 	<groupId>com.mycompany</groupId>
 	<artifactId>readmesync</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<packaging>mule-application</packaging>
 
 	<name>rafia-jewel</name>
