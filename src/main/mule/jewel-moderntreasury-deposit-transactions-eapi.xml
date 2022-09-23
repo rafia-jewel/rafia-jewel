@@ -1,0 +1,3829 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="jewel-moderntreasury-deposit-transactions-eapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="jewel-moderntreasury-deposit-transactions-eapi-config" api="resource::afc53d93-fd2f-4bcb-a855-1425acebad1e:jewel-moderntreasury-deposits-eapi:1.0.34:raml:zip:jewel-moderntreasury-deposit-transactions-eapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="jewel-moderntreasury-deposit-transactions-eapi-main">
+        <http:listener config-ref="jewel-moderntreasury-deposit-transactions-eapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="jewel-moderntreasury-deposit-transactions-eapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="jewel-moderntreasury-deposit-transactions-eapi-console">
+        <http:listener config-ref="jewel-moderntreasury-deposit-transactions-eapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="jewel-moderntreasury-deposit-transactions-eapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\authorizationHolds\(depositaccountid):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="depositaccountid">attributes.uriParams.'depositaccountid'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Autorization Hold Reversed Succesfully"]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="delete:\counterParty\(id):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "CounterParty 19H37660-cf3b-4b5f-9217-616d20b4d05f successfully deleted"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="delete:\virtualAccount\(id):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "a6d75428-b892-4091-893c-5eaf27e1cee9",
+  object: "virtual_account",
+  live_mode: false,
+  name: "Harry James Potter",
+  description: null,
+  counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+  internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+  account_details: [
+    {
+      id: "3ca80974-834d-4af7-bdcc-f5f7fceefb73",
+      object: "account_detail",
+      live_mode: false,
+      account_number: "178656176",
+      account_number_type: "other",
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  routing_details: [
+    {
+      id: "b984ba97-8ba9-4fd3-b894-5f82993f7096",
+      object: "routing_detail",
+      live_mode: false,
+      payment_type: null,
+      routing_number: "021000021",
+      routing_number_type: "aba",
+      bank_name: "JPMorgan Chase Bank, National Association",
+      bank_address: {
+        id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+        object: "address",
+        live_mode: false,
+        line1: "1111 Polaris Pkwy",
+        line2: null,
+        locality: "Columbus",
+        region: "OH",
+        postal_code: "43240",
+        country: "US",
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      },
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  credit_ledger_account_id: null,
+  debit_ledger_account_id: null,
+  metadata: {},
+  discarded_at: "2021-12-06T07:49:22Z",
+  created_at: "2021-12-06T07:38:35Z",
+  updated_at: "2022-06-07T12:07:44Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\counterParty\(id):application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  metadata: {},
+  discarded_at: null,
+  updated_at: "2022-04-26T11:50:55Z",
+  live_mode: false,
+  name: "SingleAcc Tobie Kunde",
+  created_at: "2022-04-26T11:50:55Z",
+  id: "c8929806-a282-4374-9599-1ef4b8f942b8",
+  accounts: [
+    {
+      account_type: "checking",
+      metadata: {},
+      routing_details: [
+        {
+          payment_type: null,
+          routing_number_type: "aba",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          bank_name: "Bank of America, National Association",
+          bank_address: {
+            country: "US",
+            updated_at: "2022-02-14T12:30:42Z",
+            live_mode: false,
+            locality: "Charlotte",
+            created_at: "2022-02-14T12:30:42Z",
+            id: "90a20237-63e4-47bb-84cd-5da97667e93b",
+            region: "NC",
+            postal_code: "28202",
+            line2: null,
+            line1: "100 N Tryon St, Ste 170",
+            object: "address"
+          },
+          created_at: "2022-04-26T11:50:55Z",
+          id: "2a50cd42-3664-49bb-930c-8155326c2b64",
+          routing_number: "026009593",
+          object: "routing_detail"
+        }
+      ],
+      party_type: null,
+      account_details: [
+        {
+          account_number: "013133",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          created_at: "2022-04-26T11:50:55Z",
+          account_number_type: "other",
+          id: "e37183bb-78f6-43c7-a690-205721a95c84",
+          object: "account_detail"
+        }
+      ],
+      created_at: "2022-04-26T11:50:55Z",
+      verification_status: "unverified",
+      party_name: "SingleAcc Tobie Kunde",
+      discarded_at: null,
+      updated_at: "2022-04-26T11:50:55Z",
+      live_mode: false,
+      name: null,
+      party_address: null,
+      id: "eab68e22-a0fb-41a2-8b14-ffc8258c3235",
+      object: "external_account"
+    }
+  ],
+  email: null,
+  send_remittance_advice: false,
+  object: "counterparty"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="patch:\virtualAccount\(id):application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "a6d75428-b892-4091-893c-5eaf27e1cee9",
+  object: "virtual_account",
+  live_mode: false,
+  name: "Harry James Potter",
+  description: null,
+  counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+  internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+  account_details: [
+    {
+      id: "3ca80974-834d-4af7-bdcc-f5f7fceefb73",
+      object: "account_detail",
+      live_mode: false,
+      account_number: "178656176",
+      account_number_type: "other",
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  routing_details: [
+    {
+      id: "b984ba97-8ba9-4fd3-b894-5f82993f7096",
+      object: "routing_detail",
+      live_mode: false,
+      payment_type: null,
+      routing_number: "021000021",
+      routing_number_type: "aba",
+      bank_name: "JPMorgan Chase Bank, National Association",
+      bank_address: {
+        id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+        object: "address",
+        live_mode: false,
+        line1: "1111 Polaris Pkwy",
+        line2: null,
+        locality: "Columbus",
+        region: "OH",
+        postal_code: "43240",
+        country: "US",
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      },
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  credit_ledger_account_id: null,
+  debit_ledger_account_id: null,
+  metadata: {},
+  discarded_at: "2021-12-06T07:49:22Z",
+  created_at: "2021-12-06T07:38:35Z",
+  updated_at: "2022-06-07T12:07:44Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\counterParty:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "64b6929b-8500-4c80-8758-a87a05f2cb2d",
+    object: "counterparty",
+    live_mode: false,
+    name: "Bellatrix (Check Failure)",
+    email: "bellatrix@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "b2ac62e7-fc10-4693-bc70-f490eb5c975a",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Bellatrix (Check Failure)",
+        party_type: null,
+        party_address: {
+          id: "ad2a7168-eacc-4c9f-8efa-cc29352b121a",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Azkaban Unit 321",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [],
+        routing_details: [],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "6557fb2c-8b15-435e-9cbb-3477d6550767",
+    object: "counterparty",
+    live_mode: false,
+    name: "Draco (EFT Return) - 901 NSF",
+    email: "draco-eft-901@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "429d8b55-5e87-47b0-a438-3a26e6be0d1d",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Draco (EFT Return) - 901 NSF",
+        party_type: null,
+        party_address: {
+          id: "dfd4af58-9ab0-411e-80dc-4c875aa3956f",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "b5c6f5fa-30cf-4896-a352-f56785103d1d",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10101",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "e9038e7b-3ca3-4c2c-847e-fb9955086e2a",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "000100022",
+            routing_number_type: "ca_cpa",
+            bank_name: "BANK OF MONTREAL",
+            bank_address: {
+              id: "94d3167f-5f53-4e59-8745-14696b04bc0a",
+              object: "address",
+              live_mode: false,
+              line1: "P.O. BOX 3",
+              line2: null,
+              locality: "TORONTO",
+              region: "ON",
+              postal_code: "M5X 1A3",
+              country: "CA",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "45c25dba-c697-4fb3-92e7-15f7cbb8a8e4",
+    object: "counterparty",
+    live_mode: false,
+    name: "Harry Potter",
+    email: "harry@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "a550628f-a62d-4bc1-b550-1a2a7f4eba2b",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Harry Potter",
+        party_type: null,
+        party_address: {
+          id: "3498201e-2775-4565-a164-0dfdabdb9994",
+          object: "address",
+          live_mode: false,
+          line1: "7 Hogsmeade Ave.",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "bf5f4e47-feb9-4c8c-93dd-539bbf9215bf",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "123456789",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "bacf3e18-c3cd-4020-bd51-227844d36c03",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: "Harry Potter Checking",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }, 
+      {
+        id: "0c783de8-edf1-45fa-bcae-8a70d5aa0307",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Harry Potter",
+        party_type: null,
+        party_address: {
+          id: "591d8a1d-5446-4335-9bb4-a09a18e57a14",
+          object: "address",
+          live_mode: false,
+          line1: "7 Hogsmeade Ave.",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "da557316-8981-4863-b009-780494ba4008",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "0xbc0deeaa8634404ddb1877d5c219de4be7487739",
+            account_number_type: "wallet_address",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [],
+        name: "Harry Potter Signet Wallet",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "5f42832e-f238-496d-bfa9-2770fa599ca2",
+    object: "counterparty",
+    live_mode: false,
+    name: "Lucius (General Failure)",
+    email: "lucius@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "60e90631-7a25-40be-bc68-695e9d710aa2",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Lucius (General Failure)",
+        party_type: null,
+        party_address: {
+          id: "374eb360-96f7-4a08-930a-2b8dbe39abc7",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "2d3b5fda-5935-4285-8836-579b5941465c",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "111111110",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "4ce35a85-1638-463a-ba1d-e3d7dc3dead2",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: "Lucius Checking",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }, 
+      {
+        id: "d155c3d4-9cc8-484a-a0f9-50d9f1b43c8c",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Lucius (General Failure)",
+        party_type: null,
+        party_address: {
+          id: "6a47ba38-19d6-4b3d-8f91-d0ea2df28b59",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "734b0cad-6633-4824-b322-4b080004ebef",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "0x111111110",
+            account_number_type: "wallet_address",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [],
+        name: "Lucius Signet Wallet",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "6999f1c5-60b8-4e31-80c5-db986cbed882",
+    object: "counterparty",
+    live_mode: false,
+    name: "Snape (ACH/Wire Return) - R03 No Account/Unable to Locate Account",
+    email: "snape-ach-R03@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "84b42c65-ea87-4661-9541-c7a3485ac91d",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Snape (ACH/Wire Return) - R03 No Account/Unable to Locate Account",
+        party_type: null,
+        party_address: {
+          id: "d28af97d-9cf2-494c-bd86-2b21e01e33b0",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "3330527e-552e-4da5-ab70-d67292c51ddd",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10003",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "f913663b-80b8-4d15-b233-31c84409e330",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "7ea723f9-4672-4a9e-819b-ed7478d20623",
+    object: "counterparty",
+    live_mode: false,
+    name: "Voldemort (ACH/Wire Return) - R01 Insufficient Funds",
+    email: "voldemort-ach-R01@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "3f2a9562-b6af-45bb-a486-845d72e5b6ed",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Voldemort (ACH/Wire Return) - R01 Insufficient Funds",
+        party_type: null,
+        party_address: {
+          id: "fe6c588d-d6d1-4b48-b00d-fc418e78f8e0",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "123e34b7-929f-4238-956f-f4ad49b70a10",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10001",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "e1206bfa-0769-4b62-85d4-440f846b5f09",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\entityCounterParty:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "64b6929b-8500-4c80-8758-a87a05f2cb2d",
+    object: "counterparty",
+    live_mode: false,
+    name: "Bellatrix (Check Failure)",
+    email: "bellatrix@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "b2ac62e7-fc10-4693-bc70-f490eb5c975a",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Bellatrix (Check Failure)",
+        party_type: null,
+        party_address: {
+          id: "ad2a7168-eacc-4c9f-8efa-cc29352b121a",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Azkaban Unit 321",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [],
+        routing_details: [],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "6557fb2c-8b15-435e-9cbb-3477d6550767",
+    object: "counterparty",
+    live_mode: false,
+    name: "Draco (EFT Return) - 901 NSF",
+    email: "draco-eft-901@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "429d8b55-5e87-47b0-a438-3a26e6be0d1d",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Draco (EFT Return) - 901 NSF",
+        party_type: null,
+        party_address: {
+          id: "dfd4af58-9ab0-411e-80dc-4c875aa3956f",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "b5c6f5fa-30cf-4896-a352-f56785103d1d",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10101",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "e9038e7b-3ca3-4c2c-847e-fb9955086e2a",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "000100022",
+            routing_number_type: "ca_cpa",
+            bank_name: "BANK OF MONTREAL",
+            bank_address: {
+              id: "94d3167f-5f53-4e59-8745-14696b04bc0a",
+              object: "address",
+              live_mode: false,
+              line1: "P.O. BOX 3",
+              line2: null,
+              locality: "TORONTO",
+              region: "ON",
+              postal_code: "M5X 1A3",
+              country: "CA",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "45c25dba-c697-4fb3-92e7-15f7cbb8a8e4",
+    object: "counterparty",
+    live_mode: false,
+    name: "Harry Potter",
+    email: "harry@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "a550628f-a62d-4bc1-b550-1a2a7f4eba2b",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Harry Potter",
+        party_type: null,
+        party_address: {
+          id: "3498201e-2775-4565-a164-0dfdabdb9994",
+          object: "address",
+          live_mode: false,
+          line1: "7 Hogsmeade Ave.",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "bf5f4e47-feb9-4c8c-93dd-539bbf9215bf",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "123456789",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "bacf3e18-c3cd-4020-bd51-227844d36c03",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: "Harry Potter Checking",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }, 
+      {
+        id: "0c783de8-edf1-45fa-bcae-8a70d5aa0307",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Harry Potter",
+        party_type: null,
+        party_address: {
+          id: "591d8a1d-5446-4335-9bb4-a09a18e57a14",
+          object: "address",
+          live_mode: false,
+          line1: "7 Hogsmeade Ave.",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "da557316-8981-4863-b009-780494ba4008",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "0xbc0deeaa8634404ddb1877d5c219de4be7487739",
+            account_number_type: "wallet_address",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [],
+        name: "Harry Potter Signet Wallet",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "5f42832e-f238-496d-bfa9-2770fa599ca2",
+    object: "counterparty",
+    live_mode: false,
+    name: "Lucius (General Failure)",
+    email: "lucius@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "60e90631-7a25-40be-bc68-695e9d710aa2",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Lucius (General Failure)",
+        party_type: null,
+        party_address: {
+          id: "374eb360-96f7-4a08-930a-2b8dbe39abc7",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "2d3b5fda-5935-4285-8836-579b5941465c",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "111111110",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "4ce35a85-1638-463a-ba1d-e3d7dc3dead2",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: "Lucius Checking",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }, 
+      {
+        id: "d155c3d4-9cc8-484a-a0f9-50d9f1b43c8c",
+        object: "external_account",
+        live_mode: false,
+        account_type: "other",
+        party_name: "Lucius (General Failure)",
+        party_type: null,
+        party_address: {
+          id: "6a47ba38-19d6-4b3d-8f91-d0ea2df28b59",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "734b0cad-6633-4824-b322-4b080004ebef",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "0x111111110",
+            account_number_type: "wallet_address",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [],
+        name: "Lucius Signet Wallet",
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "6999f1c5-60b8-4e31-80c5-db986cbed882",
+    object: "counterparty",
+    live_mode: false,
+    name: "Snape (ACH/Wire Return) - R03 No Account/Unable to Locate Account",
+    email: "snape-ach-R03@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "84b42c65-ea87-4661-9541-c7a3485ac91d",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Snape (ACH/Wire Return) - R03 No Account/Unable to Locate Account",
+        party_type: null,
+        party_address: {
+          id: "d28af97d-9cf2-494c-bd86-2b21e01e33b0",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "3330527e-552e-4da5-ab70-d67292c51ddd",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10003",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "f913663b-80b8-4d15-b233-31c84409e330",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }, 
+  {
+    id: "7ea723f9-4672-4a9e-819b-ed7478d20623",
+    object: "counterparty",
+    live_mode: false,
+    name: "Voldemort (ACH/Wire Return) - R01 Insufficient Funds",
+    email: "voldemort-ach-R01@example.com",
+    send_remittance_advice: false,
+    metadata: {},
+    accounts: [
+      {
+        id: "3f2a9562-b6af-45bb-a486-845d72e5b6ed",
+        object: "external_account",
+        live_mode: false,
+        account_type: "checking",
+        party_name: "Voldemort (ACH/Wire Return) - R01 Insufficient Funds",
+        party_type: null,
+        party_address: {
+          id: "fe6c588d-d6d1-4b48-b00d-fc418e78f8e0",
+          object: "address",
+          live_mode: false,
+          line1: "66 Death Eaters Way",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94108",
+          country: "US",
+          created_at: "2021-12-01T15:18:47Z",
+          updated_at: "2021-12-01T15:18:47Z"
+        },
+        account_details: [
+          {
+            id: "123e34b7-929f-4238-956f-f4ad49b70a10",
+            object: "account_detail",
+            live_mode: false,
+            account_number: "10001",
+            account_number_type: "other",
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        routing_details: [
+          {
+            id: "e1206bfa-0769-4b62-85d4-440f846b5f09",
+            object: "routing_detail",
+            live_mode: false,
+            payment_type: null,
+            routing_number: "121141822",
+            routing_number_type: "aba",
+            bank_name: "Bank of America California, National Association",
+            bank_address: {
+              id: "2038824c-22cd-407e-b32f-f0435a28dce6",
+              object: "address",
+              live_mode: false,
+              line1: "345 Montgomery St",
+              line2: null,
+              locality: "San Francisco",
+              region: "CA",
+              postal_code: "94104",
+              country: "US",
+              created_at: "2021-12-01T15:18:47Z",
+              updated_at: "2021-12-01T15:18:47Z"
+            },
+            discarded_at: null,
+            created_at: "2021-12-01T15:18:47Z",
+            updated_at: "2021-12-01T15:18:47Z"
+          }
+        ],
+        name: null,
+        metadata: {},
+        verification_status: "unverified",
+        discarded_at: null,
+        created_at: "2021-12-01T15:18:47Z",
+        updated_at: "2021-12-01T15:18:47Z"
+      }
+    ],
+    discarded_at: null,
+    created_at: "2021-12-01T15:18:47Z",
+    updated_at: "2021-12-01T15:18:47Z"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\internalAccount:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "318721f2-6144-4574-a269-098d088c76ac",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+      object: "address",
+      live_mode: false,
+      line1: "3258 Tayna Stravenue",
+      line2: "Suite 139",
+      locality: "Lake Marvis",
+      region: "WV",
+      postal_code: "89614-0726",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "ad6be208-3c1c-4080-8792-2c0e90df73db",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "e3d26dfb-6b68-400f-aac1-2262cb2e55fe",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Revenue",
+    metadata: {},
+    connection: {
+      id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example1",
+      vendor_name: "Gringotts Wizarding Bank",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "cf529ab7-5a22-47ed-ba2e-f1b6880128d1",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+      object: "address",
+      live_mode: false,
+      line1: "3258 Tayna Stravenue",
+      line2: "Suite 139",
+      locality: "Lake Marvis",
+      region: "WV",
+      postal_code: "89614-0726",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "d47e9c85-aaaa-4712-b3e5-70ced2f917af",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "a6338658-3aa8-4338-9014-20b2d43f5315",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Expenses",
+    metadata: {},
+    connection: {
+      id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example1",
+      vendor_name: "Gringotts Wizarding Bank",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "26998790-6393-401d-87b3-c6979d918958",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+      object: "address",
+      live_mode: false,
+      line1: "3258 Tayna Stravenue",
+      line2: "Suite 139",
+      locality: "Lake Marvis",
+      region: "WV",
+      postal_code: "89614-0726",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "7f8499f8-8fbb-4f79-a1cf-6c62eaa5635e",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "d1f2ae03-d09b-44ee-9365-70ee98d20584",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Corporate",
+    metadata: {},
+    connection: {
+      id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example1",
+      vendor_name: "Gringotts Wizarding Bank",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "610fbd5d-e092-4a46-91b9-a8c37b5b4443",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+      object: "address",
+      live_mode: false,
+      line1: "3258 Tayna Stravenue",
+      line2: "Suite 139",
+      locality: "Lake Marvis",
+      region: "WV",
+      postal_code: "89614-0726",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "cdf5a6f1-7ba3-4755-8bec-3a23121c5f80",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "85e95126-fe86-4fc5-b665-6dbb2e330bd1",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "000494480",
+        routing_number_type: "ca_cpa",
+        bank_name: "Toronto Dominion Bank",
+        bank_address: {
+          id: "a25f941a-65eb-49b1-be4c-95828f1a00f6",
+          object: "address",
+          live_mode: false,
+          line1: "Toronto Dominion Tower",
+          line2: null,
+          locality: "Toronto",
+          region: "ON",
+          postal_code: "M5K 1A2",
+          country: "CA",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Subsidiary (Canada)",
+    metadata: {},
+    connection: {
+      id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example1",
+      vendor_name: "Gringotts Wizarding Bank",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "CAD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "0d72ed7f-b053-49cc-9832-358446548fbd",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+      object: "address",
+      live_mode: false,
+      line1: "3258 Tayna Stravenue",
+      line2: "Suite 139",
+      locality: "Lake Marvis",
+      region: "WV",
+      postal_code: "89614-0726",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "78043c84-4a82-4a66-8434-d7bf8e94ad1c",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "0x17962e75997ede03adddd62102baa2e13ed36c5c",
+        account_number_type: "wallet_address",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [],
+    name: "Signet Wallet",
+    metadata: {},
+    connection: {
+      id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example1",
+      vendor_name: "Gringotts Wizarding Bank",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "f2e161f8-cd3e-4aa1-9384-c2e5e30d4cd6",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "95bedc93-0450-493a-900c-8ebda1d91c30",
+      object: "address",
+      live_mode: false,
+      line1: "7204 Sauer Station",
+      line2: "Suite 195",
+      locality: "South Thomasburgh",
+      region: "UT",
+      postal_code: "35219-0002",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "c3bc34de-8d0a-4690-8bfa-2dd5d9a3c0c8",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "b81d2174-d8f2-487c-abdf-3bc0e58472fe",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "064105734",
+        routing_number_type: "aba",
+        bank_name: "Wayne County Bank",
+        bank_address: {
+          id: "b306bbe8-fbfc-44dd-b02a-e97d78426401",
+          object: "address",
+          live_mode: false,
+          line1: "216 S High St",
+          line2: null,
+          locality: "Waynesboro",
+          region: "TN",
+          postal_code: "38485",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Revenue2",
+    metadata: {
+      party_type: "Check"
+    },
+    connection: {
+      id: "70894fe1-d000-4b57-b219-51a95083c64e",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example2",
+      vendor_name: "Iron Bank of Braavos",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-03T08:54:47Z"
+  }, 
+  {
+    id: "11eab182-8902-4d50-82c8-65fec36ba22c",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "95bedc93-0450-493a-900c-8ebda1d91c30",
+      object: "address",
+      live_mode: false,
+      line1: "7204 Sauer Station",
+      line2: "Suite 195",
+      locality: "South Thomasburgh",
+      region: "UT",
+      postal_code: "35219-0002",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "7893d230-b238-4dd3-b57b-4bdc0a944c56",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "1fd0ef18-bd1f-4ad0-b35f-7806b1dce342",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "064105734",
+        routing_number_type: "aba",
+        bank_name: "Wayne County Bank",
+        bank_address: {
+          id: "b306bbe8-fbfc-44dd-b02a-e97d78426401",
+          object: "address",
+          live_mode: false,
+          line1: "216 S High St",
+          line2: null,
+          locality: "Waynesboro",
+          region: "TN",
+          postal_code: "38485",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      }
+    ],
+    name: "Expenses",
+    metadata: {},
+    connection: {
+      id: "70894fe1-d000-4b57-b219-51a95083c64e",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example2",
+      vendor_name: "Iron Bank of Braavos",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  }, 
+  {
+    id: "d51baca8-ea94-46cb-8b9b-31ec1d48bf21",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "95bedc93-0450-493a-900c-8ebda1d91c30",
+      object: "address",
+      live_mode: false,
+      line1: "7204 Sauer Station",
+      line2: "Suite 195",
+      locality: "South Thomasburgh",
+      region: "UT",
+      postal_code: "35219-0002",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "66ac216e-2c04-4f43-bfdf-286f05b455a1",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:33Z",
+        updated_at: "2021-12-02T13:11:33Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "a7f016b0-52b7-4702-9235-5b046cbc9b86",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "064105734",
+        routing_number_type: "aba",
+        bank_name: "Wayne County Bank",
+        bank_address: {
+          id: "b306bbe8-fbfc-44dd-b02a-e97d78426401",
+          object: "address",
+          live_mode: false,
+          line1: "216 S High St",
+          line2: null,
+          locality: "Waynesboro",
+          region: "TN",
+          postal_code: "38485",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:33Z",
+        updated_at: "2021-12-02T13:11:33Z"
+      }
+    ],
+    name: "Corporate",
+    metadata: {},
+    connection: {
+      id: "70894fe1-d000-4b57-b219-51a95083c64e",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example2",
+      vendor_name: "Iron Bank of Braavos",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:33Z",
+    updated_at: "2021-12-02T13:11:33Z"
+  }, 
+  {
+    id: "1a2559db-1823-4c1c-987b-fcac4ed7d192",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "95bedc93-0450-493a-900c-8ebda1d91c30",
+      object: "address",
+      live_mode: false,
+      line1: "7204 Sauer Station",
+      line2: "Suite 195",
+      locality: "South Thomasburgh",
+      region: "UT",
+      postal_code: "35219-0002",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "f6936535-6f3c-41ef-b355-39523be80f21",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8287842860",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:33Z",
+        updated_at: "2021-12-02T13:11:33Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "baea9f48-6c79-4b2a-8228-7079c31bfab3",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "000494480",
+        routing_number_type: "ca_cpa",
+        bank_name: "Toronto Dominion Bank",
+        bank_address: {
+          id: "3bd53ede-d037-4827-810e-0b08be17875f",
+          object: "address",
+          live_mode: false,
+          line1: "Toronto Dominion Tower",
+          line2: null,
+          locality: "Toronto",
+          region: "ON",
+          postal_code: "M5K 1A2",
+          country: "CA",
+          created_at: "2021-12-02T13:11:33Z",
+          updated_at: "2021-12-02T13:11:33Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:33Z",
+        updated_at: "2021-12-02T13:11:33Z"
+      }
+    ],
+    name: "Subsidiary (Canada)",
+    metadata: {},
+    connection: {
+      id: "70894fe1-d000-4b57-b219-51a95083c64e",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example2",
+      vendor_name: "Iron Bank of Braavos",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "CAD",
+    created_at: "2021-12-02T13:11:33Z",
+    updated_at: "2021-12-02T13:11:33Z"
+  }, 
+  {
+    id: "f1cb49fa-6135-49de-aafc-d709b81c82f5",
+    object: "internal_account",
+    live_mode: false,
+    account_type: null,
+    party_name: "ValueMomentum",
+    party_type: null,
+    party_address: {
+      id: "95bedc93-0450-493a-900c-8ebda1d91c30",
+      object: "address",
+      live_mode: false,
+      line1: "7204 Sauer Station",
+      line2: "Suite 195",
+      locality: "South Thomasburgh",
+      region: "UT",
+      postal_code: "35219-0002",
+      country: "US",
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    account_details: [
+      {
+        id: "c41c3442-21f1-446d-9c70-c1293d479392",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "0xcb1061d68dc96a98d976ae5c56497eecc48821cb",
+        account_number_type: "wallet_address",
+        discarded_at: null,
+        created_at: "2021-12-02T13:11:33Z",
+        updated_at: "2021-12-02T13:11:33Z"
+      }
+    ],
+    routing_details: [],
+    name: "Signet Wallet",
+    metadata: {},
+    connection: {
+      id: "70894fe1-d000-4b57-b219-51a95083c64e",
+      object: "connection",
+      live_mode: false,
+      vendor_id: "example2",
+      vendor_name: "Iron Bank of Braavos",
+      vendor_customer_id: null,
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    },
+    currency: "USD",
+    created_at: "2021-12-02T13:11:33Z",
+    updated_at: "2021-12-02T13:11:33Z"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\virtualAccount:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "e933e642-f85b-4a0c-93db-ce7cd7dfaa4f",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "395eee8b-dd2a-48fa-83ec-3a8e97ffc678",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "5079368023",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2022-06-07T11:50:20Z",
+        updated_at: "2022-06-07T11:50:20Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "b198a98c-9a59-421c-a02a-54ae35377ffc",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2022-06-07T11:50:20Z",
+        updated_at: "2022-06-07T11:50:20Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {
+      mambuAccountNumber: "MambuAccountNumber"
+    },
+    discarded_at: null,
+    created_at: "2022-06-07T11:50:20Z",
+    updated_at: "2022-06-07T11:50:20Z"
+  }, 
+  {
+    id: "30d8dff3-b75b-43cc-8885-d97b3c7c940b",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "4013a5a9-d8a5-42a6-a529-b6b1f9bb2762",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "178656170",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-15T05:41:57Z",
+        updated_at: "2021-12-15T05:41:57Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "453185b2-20b1-4ad7-bfa1-7e428019830e",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-15T05:41:57Z",
+        updated_at: "2021-12-15T05:41:57Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-15T05:41:57Z",
+    updated_at: "2021-12-15T05:41:57Z"
+  }, 
+  {
+    id: "01bfb1bc-f984-43df-9345-87f428071412",
+    object: "virtual_account",
+    live_mode: false,
+    name: "Harry Potter",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "d51baca8-ea94-46cb-8b9b-31ec1d48bf21",
+    account_details: [
+      {
+        id: "dbdf5a08-3a3c-4c57-92f4-a20b3b6dffac",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "178956579",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-14T17:16:47Z",
+        updated_at: "2021-12-14T17:16:47Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "e04d588f-4d84-484d-99d7-23f591dc69ad",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "064105734",
+        routing_number_type: "aba",
+        bank_name: "Wayne County Bank",
+        bank_address: {
+          id: "b306bbe8-fbfc-44dd-b02a-e97d78426401",
+          object: "address",
+          live_mode: false,
+          line1: "216 S High St",
+          line2: null,
+          locality: "Waynesboro",
+          region: "TN",
+          postal_code: "38485",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-14T17:16:47Z",
+        updated_at: "2021-12-14T17:16:47Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-14T17:16:47Z",
+    updated_at: "2021-12-14T17:16:47Z"
+  }, 
+  {
+    id: "248c9648-d0cb-4f2c-960e-d043ba2b9594",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "0a837848-18cf-41fe-9fe6-8cd14296c2c8",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "178956176",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-10T13:35:46Z",
+        updated_at: "2021-12-10T13:35:46Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "f6578399-23af-45bb-b878-b24dd1190c3b",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-10T13:35:46Z",
+        updated_at: "2021-12-10T13:35:46Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-10T13:35:46Z",
+    updated_at: "2021-12-10T13:35:46Z"
+  }, 
+  {
+    id: "3ecd1ea0-41cd-422a-93c0-1e4da093a93e",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter1",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "0b90b1ff-5bea-4aa6-9073-c4346bd41baf",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "0068624173",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:49Z",
+        updated_at: "2021-12-10T13:13:49Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "b6762ebd-2969-485d-a25c-e46535390a23",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:49Z",
+        updated_at: "2021-12-10T13:13:49Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-10T13:13:49Z",
+    updated_at: "2021-12-10T13:13:49Z"
+  }, 
+  {
+    id: "23550669-bb93-41fa-b962-79bad2eb7dc8",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter1",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "5225a300-6fcb-47af-8d3e-e097ffc01b3c",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "8733014469",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:45Z",
+        updated_at: "2021-12-10T13:13:45Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "46d46de4-e537-44e6-a49a-552cb945c75b",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:45Z",
+        updated_at: "2021-12-10T13:13:45Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-10T13:13:44Z",
+    updated_at: "2021-12-10T13:13:44Z"
+  }, 
+  {
+    id: "611b2c5b-e86e-44a6-a8a0-ce4f4b5b0023",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter1",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "581239c9-fc6b-4ed1-bb97-e5c03cab207d",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "2205425557",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:06Z",
+        updated_at: "2021-12-10T13:13:06Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "a17ca9f9-8158-4151-9038-7545442fda1b",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-10T13:13:06Z",
+        updated_at: "2021-12-10T13:13:06Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-10T13:13:06Z",
+    updated_at: "2021-12-10T13:13:06Z"
+  }, 
+  {
+    id: "aa31e02e-10eb-4e82-ad65-2d04f7555efc",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter",
+    description: null,
+    counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "e8db8288-1d92-4cad-8af9-fa18e103b755",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "0158175337",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-06T07:33:59Z",
+        updated_at: "2021-12-06T07:33:59Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "9f8b8a5f-f17f-4e7f-9d02-5d874f1660fc",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-06T07:33:59Z",
+        updated_at: "2021-12-06T07:33:59Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-06T07:33:59Z",
+    updated_at: "2021-12-06T07:33:59Z"
+  }, 
+  {
+    id: "8f812713-6618-4163-a5d8-08def2267aa5",
+    object: "virtual_account",
+    live_mode: false,
+    name: "James Potter",
+    description: null,
+    counterparty_id: null,
+    internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+    account_details: [
+      {
+        id: "e88935df-4d34-4346-aa35-d5bf3d2131c2",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "0437662159",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-06T07:31:18Z",
+        updated_at: "2021-12-06T07:31:18Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "8a0da446-c208-4cf1-83a2-db6bc37a295d",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "021000021",
+        routing_number_type: "aba",
+        bank_name: "JPMorgan Chase Bank, National Association",
+        bank_address: {
+          id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+          object: "address",
+          live_mode: false,
+          line1: "1111 Polaris Pkwy",
+          line2: null,
+          locality: "Columbus",
+          region: "OH",
+          postal_code: "43240",
+          country: "US",
+          created_at: "2021-12-02T13:11:32Z",
+          updated_at: "2021-12-02T13:11:32Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-06T07:31:18Z",
+        updated_at: "2021-12-06T07:31:18Z"
+      }
+    ],
+    credit_ledger_account_id: null,
+    debit_ledger_account_id: null,
+    metadata: {},
+    discarded_at: null,
+    created_at: "2021-12-06T07:31:18Z",
+    updated_at: "2021-12-06T07:31:18Z"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\authorizationHolds\(depositaccountid):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="depositaccountid">attributes.uriParams.'depositaccountid'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "128a0416-024f-4a4c-98c1-5bbc8aa0f86c",
+    advice: false,
+    amount: 220.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:40:27.243-03:00",
+    encodedKey: "8a508e8180417c8001806b722f47396d"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "7b158a61-7b95-4221-99da-934a48287166",
+    advice: false,
+    amount: 220.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:34:46.983-03:00",
+    encodedKey: "8a508e8180417c8001806b722f47396c"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "93aca87b-104a-487d-971b-58129d687ea5",
+    advice: false,
+    amount: 220.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:33:04.219-03:00",
+    encodedKey: "8a508e8180417c8001806b678fe5396b"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "5222cefe-8324-426c-ab5c-e0cfec450f18",
+    advice: false,
+    amount: 220.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:27:22.992-03:00",
+    encodedKey: "8a508e8180417c8001806b678fe5396a"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "1946c41d-4957-40a8-a2c8-ae10abf81596",
+    advice: false,
+    amount: 220.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:26:50.711-03:00",
+    encodedKey: "8a508e8180417c8001806b678fe53969"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "da625e5d-f175-40e9-8abc-12feea702c80",
+    advice: false,
+    amount: 300.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:24:10.838-03:00",
+    encodedKey: "8a508e8180417c8001806b678fe53968"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "f54b45c6-9853-4ede-aff8-733ed8351d84",
+    advice: false,
+    amount: 300.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:23:10.821-03:00",
+    encodedKey: "8a508e8180417c8001806b678fe53967"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "f2645502-9c5e-4007-8a77-436316e13732",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:15:16.658-03:00",
+    encodedKey: "8a508e8180417c8001806b5d10113966"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "2944e8da-52f6-489d-a496-83d952bfe6ba",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T11:12:50.769-03:00",
+    encodedKey: "8a508e8180417c8001806b5d10113965"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "601c83d6-f33f-45da-9d90-5e0bd4b2e137",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T10:56:19.723-03:00",
+    encodedKey: "8a508e8180417c8001806b4b21f2395b"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "7b332a9c-aa2c-41ff-9cbd-b39535a90277",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T10:46:01.932-03:00",
+    encodedKey: "8a508e8180417c8001806b43e0323951"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "87fbb67d-8963-4b4d-954d-9e45e604e677",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T10:35:04.518-03:00",
+    encodedKey: "8a508e8180417c8001806b1d0a833947"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "bcffae60-a8fa-4f44-8a07-848b1d30a8e6",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T09:46:22.253-03:00",
+    encodedKey: "8a508e8180417c8001806af008f9393d"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "3f3a17e9-451a-48ce-91ef-ec22b95808cb",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T09:06:41.622-03:00",
+    encodedKey: "8a508e8180417c8001806ad85e093933"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "1f118781-ec9d-4436-979f-83fa15962571",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T08:52:27.961-03:00",
+    encodedKey: "8a508e8180417c8001806ad85e093932"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "f51dc00c-d559-4169-b5f9-e4c07d775721",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-27T08:46:46.409-03:00",
+    encodedKey: "8a508e8180417c8001806ad85e093930"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "b2305781-bcbc-4a17-a50a-3afffb7d7bf0",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:39:37.61-03:00",
+    encodedKey: "8a508e8180417c80018065de28f23913"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "6ef9f194-0bd3-4df2-afe2-2248be334efa",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:34:59.954-03:00",
+    encodedKey: "8a508e8180417c80018065de28f23912"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "49a2b5a7-0287-465a-ab50-7ef0a4ba9d2e",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:32:05.709-03:00",
+    encodedKey: "8a508e8180417c80018065bb687e3911"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "5ae073ff-d8f5-485d-980a-e9e140362e39",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:22:12.113-03:00",
+    encodedKey: "8a508e8180417c80018065bb687e3910"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "d6239500-087d-4b0c-ad8d-c9173a5bdfcc",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:18:39.302-03:00",
+    encodedKey: "8a508e8180417c80018065bb687e390f"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "1141a832-b8ad-445c-b031-b5a2d5a1ed5c",
+    advice: false,
+    amount: 11000.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T09:12:43.761-03:00",
+    encodedKey: "8a508e8180417c80018065bb687e390e"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "c86024e6-4b7f-4aa1-973a-e09ee22e5c39",
+    advice: false,
+    amount: 6.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T08:44:22.916-03:00",
+    encodedKey: "8a508e8180417c80018065a94f3e36d9"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "383f2718-31fd-4a1b-8c79-e2027d609386",
+    advice: false,
+    amount: 300.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T08:32:10.738-03:00",
+    encodedKey: "8a508e8180417c800180659b04db36cf"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "b922aea8-7979-4401-aa14-d39fa4b1b5f4",
+    advice: false,
+    amount: 600.0000000000,
+    status: "SETTLED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T07:40:28.538-03:00",
+    encodedKey: "8a508e8180417c8001806554887536b7"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "ac03ae5a-9e21-4bbf-9b79-2cdb4bbcac69",
+    advice: false,
+    amount: 300.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T06:57:19.168-03:00",
+    encodedKey: "8a508e8180417c800180654dccc036ab"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "9e4e690c-d62a-4faa-8bbf-485b81dc1f78",
+    advice: false,
+    amount: 50.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T06:47:19.976-03:00",
+    encodedKey: "8a508e8180417c800180653496e736a2"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "8caa934-000-4b9c-5d-510f6cd0hb45",
+    advice: false,
+    amount: 30.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-26T04:01:21.442-03:00",
+    encodedKey: "8a508e8180417c80018064a977d636a0"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "9caa934-000-4b9c-5d-510f6cd07b45",
+    advice: false,
+    amount: 30.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-25T10:37:18.817-03:00",
+    encodedKey: "8a50a2dd80603515018060f0a49d0033"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "9caa934-9ed-4b9c-5d-510f6cd07b45",
+    advice: false,
+    amount: 20.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-25T07:49:12.8-03:00",
+    encodedKey: "8a508e8180417c80018060553edf3655"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "96caa934-9ed-4b9c-5d-510f6cd07b45",
+    advice: false,
+    amount: 20.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-25T07:48:53.159-03:00",
+    encodedKey: "8a508e8180417c80018060553edf3654"
+  }, 
+  {
+    accountKey: "8a50883e7c32e852017c330524dd000e",
+    externalReferenceId: "96caa934-9ed-4b9c-905d-510f6cd07b45",
+    advice: false,
+    amount: 10.0000000000,
+    status: "REVERSED",
+    creditDebitIndicator: "DBIT",
+    source: "ACCOUNT",
+    creationDate: "2022-04-25T07:44:30.421-03:00",
+    encodedKey: "8a508e8180417c800180602cbae33643"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\deposits\(depositaccountid):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="depositaccountid">attributes.uriParams.'depositaccountid'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    encodedKey: "8a19c9c5764281700176431631370690",
+    id: "134",
+    externalId: "46290",
+    paymentOrderId: "PAY-1234-abc",
+    creationDate: "2020-12-08T17:01:37+01:00",
+    valueDate: "2020-12-08T17:00:00+01:00",
+    bookingDate: "2020-12-08T17:00:00+01:00",
+    notes: "some notes about this transaction",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "TRANSFER",
+    amount: -200,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49250
+    },
+    userKey: "8a194075720ece2c017226fced6f005e",
+    transactionDetails: {}
+  }, 
+  {
+    encodedKey: "8a19c9c5764281700176430fbebe0682",
+    id: "132",
+    creationDate: "2020-12-08T16:55:40+01:00",
+    valueDate: "2020-12-08T16:55:39+01:00",
+    bookingDate: "2020-12-08T16:55:41+01:00",
+    notes: "some notes",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "TRANSFER",
+    amount: -300,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49450
+    },
+    userKey: "8a194075720ece2c017226fced6f005e",
+    transactionDetails: {}
+  }, 
+  {
+    encodedKey: "8a19a51476366c28017636e9ef5b002c",
+    id: "131",
+    creationDate: "2020-12-06T08:32:32+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-04T00:00:00+01:00",
+    notes: "update day of deposit",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "ADJUSTMENT",
+    amount: -50,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49750
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }, 
+  {
+    encodedKey: "8a19a51476366c28017636e9ef5b0028",
+    id: "130",
+    creationDate: "2020-12-06T08:17:50+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-03T12:00:00+01:00",
+    notes: "customer found 50 euro",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "DEPOSIT",
+    amount: 50,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49800
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    adjustmentTransactionKey: "8a19a51476366c28017636e9ef5b002c",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }, 
+  {
+    encodedKey: "8a19c7f27633d4c1017633e4ab860006",
+    id: "129",
+    creationDate: "2020-12-05T18:14:15+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-04T00:00:00+01:00",
+    notes: "string",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "WITHDRAWAL_ADJUSTMENT",
+    amount: 500,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49750
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }, 
+  {
+    encodedKey: "8a19bbf77631c84a017632f06cc40301",
+    id: "127",
+    creationDate: "2020-12-05T13:49:37+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-03T12:00:00+01:00",
+    notes: "customer wants to buy Christmas presents",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "WITHDRAWAL",
+    amount: -500,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49250
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    adjustmentTransactionKey: "8a19c7f27633d4c1017633e4ab860006",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }, 
+  {
+    encodedKey: "8a19bbf77631c84a017632f06cc402fd",
+    id: "126",
+    creationDate: "2020-12-05T13:46:26+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-03T12:00:00+01:00",
+    notes: "customer wants to buy Christmas presents",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "WITHDRAWAL",
+    amount: -500,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 49750
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }, 
+  {
+    encodedKey: "8a19bbf77631c84a017632df01db02f9",
+    id: "125",
+    creationDate: "2020-12-05T13:39:46+01:00",
+    valueDate: "2020-12-02T12:00:00+01:00",
+    bookingDate: "2020-12-03T12:00:00+01:00",
+    notes: "customer found 50 euro",
+    parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+    "type": "DEPOSIT",
+    amount: 50,
+    currencyCode: "EUR",
+    accountBalances: {
+      totalBalance: 50250
+    },
+    userKey: "8a19b628762ca2a201762d39b29005ce",
+    transactionDetails: {
+      transactionChannelKey: "8a194075720ece2c017226fcf55e0064"
+    }
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\internalAccount\(id):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "318721f2-6144-4574-a269-098d088c76ac",
+  object: "internal_account",
+  live_mode: false,
+  account_type: null,
+  party_name: "ValueMomentum",
+  party_type: null,
+  party_address: {
+    id: "0ee6791b-40a1-4c1b-a1be-e4f47d865955",
+    object: "address",
+    live_mode: false,
+    line1: "3258 Tayna Stravenue",
+    line2: "Suite 139",
+    locality: "Lake Marvis",
+    region: "WV",
+    postal_code: "89614-0726",
+    country: "US",
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  },
+  account_details: [
+    {
+      id: "ad6be208-3c1c-4080-8792-2c0e90df73db",
+      object: "account_detail",
+      live_mode: false,
+      account_number: "8287842860",
+      account_number_type: "other",
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    }
+  ],
+  routing_details: [
+    {
+      id: "e3d26dfb-6b68-400f-aac1-2262cb2e55fe",
+      object: "routing_detail",
+      live_mode: false,
+      payment_type: null,
+      routing_number: "021000021",
+      routing_number_type: "aba",
+      bank_name: "JPMorgan Chase Bank, National Association",
+      bank_address: {
+        id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+        object: "address",
+        live_mode: false,
+        line1: "1111 Polaris Pkwy",
+        line2: null,
+        locality: "Columbus",
+        region: "OH",
+        postal_code: "43240",
+        country: "US",
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      },
+      discarded_at: null,
+      created_at: "2021-12-02T13:11:32Z",
+      updated_at: "2021-12-02T13:11:32Z"
+    }
+  ],
+  name: "Revenue",
+  metadata: {},
+  connection: {
+    id: "c179b594-3664-4424-8c5b-80a9cf551b45",
+    object: "connection",
+    live_mode: false,
+    vendor_id: "example1",
+    vendor_name: "Gringotts Wizarding Bank",
+    vendor_customer_id: null,
+    discarded_at: null,
+    created_at: "2021-12-02T13:11:32Z",
+    updated_at: "2021-12-02T13:11:32Z"
+  },
+  currency: "USD",
+  created_at: "2021-12-02T13:11:32Z",
+  updated_at: "2021-12-02T13:11:32Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\virtualAccount\(id):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "a6d75428-b892-4091-893c-5eaf27e1cee9",
+  object: "virtual_account",
+  live_mode: false,
+  name: "Jame Potter William",
+  description: null,
+  counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+  internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+  account_details: [
+    {
+      id: "3ca80974-834d-4af7-bdcc-f5f7fceefb73",
+      object: "account_detail",
+      live_mode: false,
+      account_number: "178656176",
+      account_number_type: "other",
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  routing_details: [
+    {
+      id: "b984ba97-8ba9-4fd3-b894-5f82993f7096",
+      object: "routing_detail",
+      live_mode: false,
+      payment_type: null,
+      routing_number: "021000021",
+      routing_number_type: "aba",
+      bank_name: "JPMorgan Chase Bank, National Association",
+      bank_address: {
+        id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+        object: "address",
+        live_mode: false,
+        line1: "1111 Polaris Pkwy",
+        line2: null,
+        locality: "Columbus",
+        region: "OH",
+        postal_code: "43240",
+        country: "US",
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      },
+      discarded_at: null,
+      created_at: "2021-12-06T07:38:35Z",
+      updated_at: "2021-12-06T07:38:35Z"
+    }
+  ],
+  credit_ledger_account_id: null,
+  debit_ledger_account_id: null,
+  metadata: {},
+  discarded_at: "2021-12-06T07:49:22Z",
+  created_at: "2021-12-06T07:38:35Z",
+  updated_at: "2021-12-06T07:49:22Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\counterParty\(id):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  metadata: {},
+  discarded_at: null,
+  updated_at: "2022-04-26T11:50:55Z",
+  live_mode: false,
+  name: "SingleAcc Tobie Kunde",
+  created_at: "2022-04-26T11:50:55Z",
+  id: "c8929806-a282-4374-9599-1ef4b8f942b8",
+  accounts: [
+    {
+      account_type: "checking",
+      metadata: {},
+      routing_details: [
+        {
+          payment_type: null,
+          routing_number_type: "aba",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          bank_name: "Bank of America, National Association",
+          bank_address: {
+            country: "US",
+            updated_at: "2022-02-14T12:30:42Z",
+            live_mode: false,
+            locality: "Charlotte",
+            created_at: "2022-02-14T12:30:42Z",
+            id: "90a20237-63e4-47bb-84cd-5da97667e93b",
+            region: "NC",
+            postal_code: "28202",
+            line2: null,
+            line1: "100 N Tryon St, Ste 170",
+            object: "address"
+          },
+          created_at: "2022-04-26T11:50:55Z",
+          id: "2a50cd42-3664-49bb-930c-8155326c2b64",
+          routing_number: "026009593",
+          object: "routing_detail"
+        }
+      ],
+      party_type: null,
+      account_details: [
+        {
+          account_number: "013133",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          created_at: "2022-04-26T11:50:55Z",
+          account_number_type: "other",
+          id: "e37183bb-78f6-43c7-a690-205721a95c84",
+          object: "account_detail"
+        }
+      ],
+      created_at: "2022-04-26T11:50:55Z",
+      verification_status: "unverified",
+      party_name: "SingleAcc Tobie Kunde",
+      discarded_at: null,
+      updated_at: "2022-04-26T11:50:55Z",
+      live_mode: false,
+      name: null,
+      party_address: null,
+      id: "eab68e22-a0fb-41a2-8b14-ffc8258c3235",
+      object: "external_account"
+    }
+  ],
+  email: null,
+  send_remittance_advice: false,
+  object: "counterparty"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\deposits\transaction\(transactionid):jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="transactionid">attributes.uriParams.'transactionid'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  encodedKey: "8a19c9c5764281700176431631370690",
+  id: "134",
+  externalId: "46290",
+  paymentOrderId: "PAY-1234-abc",
+  creationDate: "2020-12-08T17:01:37+01:00",
+  valueDate: "2020-12-08T17:00:00+01:00",
+  bookingDate: "2020-12-08T17:00:00+01:00",
+  notes: "some notes about this transaction",
+  parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+  "type": "TRANSFER",
+  amount: -200,
+  currencyCode: "EUR",
+  affectedAmounts: {
+    fundsAmount: 200,
+    interestAmount: 0,
+    feesAmount: 0,
+    overdraftAmount: 0,
+    overdraftFeesAmount: 0,
+    overdraftInterestAmount: 0,
+    technicalOverdraftAmount: 0,
+    technicalOverdraftInterestAmount: 0,
+    fractionAmount: 0
+  },
+  taxes: {},
+  accountBalances: {
+    totalBalance: 49250
+  },
+  userKey: "8a194075720ece2c017226fced6f005e",
+  terms: {
+    interestSettings: {},
+    overdraftInterestSettings: {},
+    overdraftSettings: {}
+  },
+  transactionDetails: {},
+  transferDetails: {
+    linkedLoanTransactionKey: "8a19c9c5764281700176431631370692"
+  },
+  fees: []
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\caTransaction:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Transaction Posted Successfully"]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\counterParty:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  metadata: {},
+  discarded_at: null,
+  updated_at: "2022-04-26T11:50:55Z",
+  live_mode: false,
+  name: "SingleAcc Tobie Kunde",
+  created_at: "2022-04-26T11:50:55Z",
+  id: "c8929806-a282-4374-9599-1ef4b8f942b8",
+  accounts: [
+    {
+      account_type: "checking",
+      metadata: {},
+      routing_details: [
+        {
+          payment_type: null,
+          routing_number_type: "aba",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          bank_name: "Bank of America, National Association",
+          bank_address: {
+            country: "US",
+            updated_at: "2022-02-14T12:30:42Z",
+            live_mode: false,
+            locality: "Charlotte",
+            created_at: "2022-02-14T12:30:42Z",
+            id: "90a20237-63e4-47bb-84cd-5da97667e93b",
+            region: "NC",
+            postal_code: "28202",
+            line2: null,
+            line1: "100 N Tryon St, Ste 170",
+            object: "address"
+          },
+          created_at: "2022-04-26T11:50:55Z",
+          id: "2a50cd42-3664-49bb-930c-8155326c2b64",
+          routing_number: "026009593",
+          object: "routing_detail"
+        }
+      ],
+      party_type: null,
+      account_details: [
+        {
+          account_number: "013133",
+          discarded_at: null,
+          updated_at: "2022-04-26T11:50:55Z",
+          live_mode: false,
+          created_at: "2022-04-26T11:50:55Z",
+          account_number_type: "other",
+          id: "e37183bb-78f6-43c7-a690-205721a95c84",
+          object: "account_detail"
+        }
+      ],
+      created_at: "2022-04-26T11:50:55Z",
+      verification_status: "unverified",
+      party_name: "SingleAcc Tobie Kunde",
+      discarded_at: null,
+      updated_at: "2022-04-26T11:50:55Z",
+      live_mode: false,
+      name: null,
+      party_address: null,
+      id: "eab68e22-a0fb-41a2-8b14-ffc8258c3235",
+      object: "external_account"
+    }
+  ],
+  email: null,
+  send_remittance_advice: false,
+  object: "counterparty"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\paymentOrder:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "cf661474-9dbb-4287-8ee3-0376729e6d1e",
+  object: "payment_order",
+  live_mode: false,
+  "type": "ach",
+  amount: 0,
+  direction: "debit",
+  originating_account_id: "cf529ab7-5a22-47ed-ba2e-f1b6880128d1",
+  receiving_account: {
+    id: "50b10f65-0fe1-4fc9-a1de-104d37c5bcca",
+    object: "external_account",
+    live_mode: false,
+    account_type: "other",
+    party_name: "James Potter",
+    party_type: "individual",
+    party_address: {
+      id: "407f6bfa-d45d-4131-b7c1-e314889f45b0",
+      object: "address",
+      live_mode: false,
+      line1: "9 Hogswade",
+      line2: null,
+      locality: "San Francisco",
+      region: "CA",
+      postal_code: "94108",
+      country: "US",
+      created_at: "2021-12-14T13:29:22Z",
+      updated_at: "2021-12-14T13:29:22Z"
+    },
+    account_details: [
+      {
+        id: "0d6d9628-0500-4ee9-bad2-1e4bbf38cba0",
+        object: "account_detail",
+        live_mode: false,
+        account_number: "178656179",
+        account_number_type: "other",
+        discarded_at: null,
+        created_at: "2021-12-14T12:56:26Z",
+        updated_at: "2021-12-14T12:56:26Z"
+      }
+    ],
+    routing_details: [
+      {
+        id: "e02c49e6-d174-49e3-bd9a-f97cb6307d67",
+        object: "routing_detail",
+        live_mode: false,
+        payment_type: null,
+        routing_number: "121141822",
+        routing_number_type: "aba",
+        bank_name: "Bank of America California, National Association",
+        bank_address: {
+          id: "8d2cdc1d-2dee-4149-9133-73bb9df8fc47",
+          object: "address",
+          live_mode: false,
+          line1: "345 Montgomery St",
+          line2: null,
+          locality: "San Francisco",
+          region: "CA",
+          postal_code: "94104",
+          country: "US",
+          created_at: "2021-12-02T13:11:33Z",
+          updated_at: "2021-12-02T13:11:33Z"
+        },
+        discarded_at: null,
+        created_at: "2021-12-14T12:56:26Z",
+        updated_at: "2021-12-14T12:56:26Z"
+      }
+    ],
+    name: "James Potter",
+    metadata: {},
+    verification_status: "unverified",
+    discarded_at: null,
+    created_at: "2021-12-14T12:56:26Z",
+    updated_at: "2021-12-14T13:29:22Z"
+  },
+  receiving_account_id: "50b10f65-0fe1-4fc9-a1de-104d37c5bcca",
+  receiving_account_type: "external_account",
+  accounting_category_id: null,
+  accounting_ledger_class_id: null,
+  currency: "USD",
+  effective_date: "2022-02-17",
+  priority: "normal",
+  description: null,
+  statement_descriptor: null,
+  remittance_information: null,
+  metadata: {},
+  status: "approved",
+  counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+  transaction_ids: [],
+  charge_bearer: null,
+  foreign_exchange_indicator: null,
+  foreign_exchange_contract: null,
+  nsf_protected: false,
+  originating_party_name: null,
+  ultimate_originating_party_name: null,
+  ultimate_originating_party_identifier: null,
+  ultimate_receiving_party_name: null,
+  ultimate_receiving_party_identifier: null,
+  current_return: null,
+  reference_numbers: [],
+  subtype: null,
+  purpose: null,
+  vendor_failure_reason: null,
+  created_at: "2022-02-16T07:39:11Z",
+  updated_at: "2022-02-16T07:39:11Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\paymentOrderEvent:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Transaction Event Completed Succesfully"]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\return:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "013c9dd0-6a9c-481b-90f9-6f074f07d734",
+  object: "return",
+  live_mode: false,
+  status: "pending",
+  returnable_id: "7c87ed6a-cc08-4384-9b81-94a2d8993d7a",
+  returnable_type: "incoming_payment_detail",
+  transaction_line_item_id: null,
+  transaction_id: null,
+  internal_account_id: "26998790-6393-401d-87b3-c6979d918958",
+  "type": "ach",
+  amount: 50,
+  currency: "USD",
+  code: "R01",
+  reason: "8a5083987f26c38f017f3048af8e009a",
+  role: "originating",
+  additional_information: "Testing",
+  date_of_death: null,
+  reference_numbers: [],
+  created_at: "2022-03-03T07:24:06Z",
+  updated_at: "2022-03-03T07:24:06Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\deposits\transaction\search:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  encodedKey: "8a19c9c5764281700176431631370690",
+  id: "134",
+  externalId: "46290",
+  paymentOrderId: "PAY-1234-abc",
+  creationDate: "2020-12-08T17:01:37+01:00",
+  valueDate: "2020-12-08T17:00:00+01:00",
+  bookingDate: "2020-12-08T17:00:00+01:00",
+  notes: "some notes about this transaction",
+  parentAccountKey: "8a19c3ea762d719601762d8270ad0020",
+  "type": "TRANSFER",
+  amount: -200,
+  currencyCode: "EUR",
+  accountBalances: {
+    totalBalance: 49250
+  },
+  userKey: "8a194075720ece2c017226fced6f005e",
+  transactionDetails: {}
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\virtualAccount:application\json:jewel-moderntreasury-deposit-transactions-eapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "e933e642-f85b-4a0c-93db-ce7cd7dfaa4f",
+  object: "virtual_account",
+  live_mode: false,
+  name: "James Potter",
+  description: null,
+  counterparty_id: "4c50e7f0-7a86-4e99-9cb4-d32aa320132b",
+  internal_account_id: "318721f2-6144-4574-a269-098d088c76ac",
+  account_details: [
+    {
+      id: "395eee8b-dd2a-48fa-83ec-3a8e97ffc678",
+      object: "account_detail",
+      live_mode: false,
+      account_number: "5079368023",
+      account_number_type: "other",
+      discarded_at: null,
+      created_at: "2022-06-07T11:50:20Z",
+      updated_at: "2022-06-07T11:50:20Z"
+    }
+  ],
+  routing_details: [
+    {
+      id: "b198a98c-9a59-421c-a02a-54ae35377ffc",
+      object: "routing_detail",
+      live_mode: false,
+      payment_type: null,
+      routing_number: "021000021",
+      routing_number_type: "aba",
+      bank_name: "JPMorgan Chase Bank, National Association",
+      bank_address: {
+        id: "95992d61-1c95-4b76-af7b-eba9ab1fe9ec",
+        object: "address",
+        live_mode: false,
+        line1: "1111 Polaris Pkwy",
+        line2: null,
+        locality: "Columbus",
+        region: "OH",
+        postal_code: "43240",
+        country: "US",
+        created_at: "2021-12-02T13:11:32Z",
+        updated_at: "2021-12-02T13:11:32Z"
+      },
+      discarded_at: null,
+      created_at: "2022-06-07T11:50:20Z",
+      updated_at: "2022-06-07T11:50:20Z"
+    }
+  ],
+  credit_ledger_account_id: null,
+  debit_ledger_account_id: null,
+  metadata: {
+    mambuAccountNumber: "MambuAccountNumber"
+  },
+  discarded_at: null,
+  created_at: "2022-06-07T11:50:20Z",
+  updated_at: "2022-06-07T11:50:20Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>
