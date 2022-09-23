@@ -29,7 +29,7 @@ jobs:
           
         uses: readmeio/rdme@7.5.0
         with:
-          rdme: openapi api.json --key=${{ secrets.README_API_KEY }}
+          rdme: openapi api.json --key=${{ secrets.README_API_KEY }} --id=${{ secrets.API_DEFINITION_KEY }}
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
