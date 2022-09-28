@@ -9,8 +9,12 @@
   ],
   "paths": {
     "/paymentOrderEvent": {
+      "description": "Payment Order",
       "x-amf-description": "This endpoint is configured as a webhook in Modern treasury which is executed for all the transaction events like, created, completed, reconciled, etc. These payment events are persisted in Jewel store and further processed based on the event type",
       "post": {
+        "x-tags": [
+          "Deposit"
+        ],
         "consumes": [
           "application/json"
         ],
@@ -185,6 +189,9 @@
     "/deposits/{depositaccountid}": {
       "x-amf-description": "Returns all the transactions registered on the provided account. This response can be visualized as a statement for an account",
       "get": {
+        "x-tags": [
+          "Deposit"
+        ],
 	"description" : "Allows retrieval of a single deposit account via id or encoded key",
         "produces": [
           "application/json"
@@ -448,6 +455,9 @@
     "/deposits/transaction/{transactionid}": {
       "x-amf-description": "Gets the specific transaction details",
       "get": {
+        "x-tags": [
+          "Transaction Deposit"
+        ],
 	"description" :"Gets the specific transaction details",
         "produces": [
           "application/json"
